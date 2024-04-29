@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./main.js"],
   theme: {
     extend: {
+      screens: {
+        xs: "425px",
+      },
       colors: {
         bkg: "#171819",
         muted: "#C9CBCF",
@@ -14,7 +17,7 @@ export default {
         "text-lg": "1px 4px 0px rgba(0, 0, 0, 0.90)",
       },
       container: {
-        center: "true",
+        center: true,
         padding: {
           DEFAULT: "1rem",
           sm: "2rem",
