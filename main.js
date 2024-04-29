@@ -1,41 +1,60 @@
 import "./style.css";
 
-// IMAGE SLIDER
+// IMAGE SLIDER //
 const slideBtns = document.querySelectorAll("[data-slideBtn]");
 const slideContainer = document.querySelector("[data-slideContainer]");
 const slides = [...document.querySelectorAll("[data-slide]")];
 
-// index
 let currentIndex = 0;
+let isMoving = false;
 
-// button handle functions
+// btn handle function
 function handleSlideBtnClick(e) {
-  // 1. see if slider is already moving
+  if (isMoving) return;
+  isMoving = true;
   e.currentTarget.id === "prev" ? currentIndex-- : currentIndex++;
-  console.log("~ handleSlideBtnClick ~ currentIndex", currentIndex);
   slideContainer.dispatchEvent(new Event("sliderMove"));
 }
 
-// remove/add attributes function
+// remove/add attirubte function
 const removeDisabledAttribute = (els) =>
   els.forEach((el) => el.removeAttribute("disabled"));
-
 const addDisabledAttribute = (els) =>
-  els.forEach((el) => el.setAttribute("disabled", true));
+  els.forEach((el) => el.setAttribute("disabled", "true"));
 
 // event listeners
 slideBtns.forEach((btn) => btn.addEventListener("click", handleSlideBtnClick));
 
 slideContainer.addEventListener("sliderMove", () => {
-  // 1. translate the container to the right or the left
+  // 1. translate the container to the right/left
   slideContainer.style.transform = `translateX(-${
     currentIndex * slides[0].clientWidth
   }px)`;
 
-  // 2. remove the disabled attributes
+  // 2. remove disabled attributes
   removeDisabledAttribute(slideBtns);
 
-  // 3. re enable disabled attribute if needed
+  // 3. renable disabled attribute if needed
   currentIndex === 0 && addDisabledAttribute([slideBtns[0]]);
-  console.log("it has moved!");
 });
+
+// transitions and event
+slideContainer.addEventListener("transitionend", () => (isMoving = false));
+
+// disable image drag events
+document
+  .querySelectorAll("[data-slide] img")
+  .forEach((img) => (img.ondragstart = () => false));
+
+// intersection observer for slider
+const slideObserver = new IntersectionObserver(
+  (slide) => {
+    console.log(slide[0].isIntersecting);
+    if (slide[0].isIntersecting) {
+      addDisabledAttribute([slideBtns[1]]);
+    }
+  },
+  { threshold: 0.75 },
+);
+
+slideObserver.observe(slides[slides.length - 1]);
